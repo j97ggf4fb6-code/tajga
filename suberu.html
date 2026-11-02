@@ -111,6 +111,7 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #0002}
 .c.g.m::after{content:"😈";animation:wg .7s ease-in-out infinite}
 .c.g.f::after{content:"😜"}
 @keyframes wg{50%{transform:rotate(14deg) scale(1.12)}}
+#re.used{opacity:.45}
 </style></head><body class="home">
 <div id="bg"></div>
 <div id="hud"><div class="pill"><small>STAGE</small><span id="stg">1</span></div><div id="hearts" class="pill"></div><div class="pill"><small>SCORE</small><span id="sc">0</span><small id="mx"></small></div></div>
@@ -122,7 +123,7 @@ button:active{transform:translateY(3px);box-shadow:0 1px 0 #0002}
 <div id="ov" class="home"><div class="box hm" id="box"></div></div>
 <script>
 const N=7,D=[[0,1],[0,-1],[1,0],[-1,0]],$=s=>document.querySelector(s),rand=a=>a[Math.random()*a.length|0],FACE='<u></u><u></u><s></s>';
-let W,S,G,P,L,left,stage=1,lives=3,near=0,combo=0,maxCombo=0,score=0,shown=0,bestScore=0,hist=[],lastD=0,tab='local',busy=true,playing=false,mute=false,best=1,cells=[],tt,dbp=null,SK=[],K=new Set(),opt=0,slk=2,mean=false,fled=0,G0=0,daily=false,coins=0,undos=1,hist2=[],lastW=-1;
+let W,S,G,P,L,left,stage=1,lives=3,near=0,combo=0,maxCombo=0,score=0,shown=0,bestScore=0,hist=[],lastD=0,tab='local',busy=true,playing=false,mute=false,best=1,cells=[],tt,dbp=null,SK=[],K=new Set(),opt=0,slk=2,mean=false,fled=0,G0=0,daily=false,coins=0,undos=1,hist2=[],lastW=-1,retried=false;
 try{best=+localStorage.getItem('pit_best')||1;bestScore=+localStorage.getItem('pit_score')||0;hist=JSON.parse(localStorage.getItem('pit_hist')||'[]')}catch(e){}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const RANKS=[[1,'🐣','ころがり見習い'],[4,'🧊','ツルツル新人'],[7,'🛷','スライダー'],[11,'🎯','ピタ止め職人'],[16,'👑','ピタッとマスター'],[22,'🌈','伝説のピタ神']];
@@ -166,7 +167,7 @@ function burst(c,n,sp,hs){for(let i=0;i<n;i++){const s=document.createElement('s
 function banner(t,c){const b=$('#bn');b.textContent=t;b.style.setProperty('--bc',c);b.classList.remove('show');void b.offsetWidth;b.classList.add('show')}
 function scr(){const f=$('#fl');f.classList.remove('on');void f.offsetWidth;f.classList.add('on')}
 function reset(){const p=pe();p.style.setProperty('--t','0ms');if(G!==G0){cells[G].classList.remove('g','m','f');G=G0;cells[G].classList.add('g');if(mean)cells[G].classList.add('m')}fled=0;hist2=[];P=S;left=L;place();void p.offsetWidth;busy=false;pips();hud();mood('')}
-function level(){gen();build();reset();theme();const b=stage%5===0;banner(b?'BONUS STAGE ⭐':mean?'😈 いじわるSTAGE':'STAGE '+stage,b?'#ff9a3c':mean?'#e0322a':'#3a7bff');const m=mean?'★を通り過ぎると逃げるぞ！':{2:'🪙 コイン登場！通ると+50',3:'ネバネバ登場！触れると止まる'}[stage];if(m)setTimeout(()=>toast(m,'ok'),900)}
+function level(){gen();build();reset();theme();retried=false;$('#re').classList.remove('used');const b=stage%5===0;banner(b?'BONUS STAGE ⭐':mean?'😈 いじわるSTAGE':'STAGE '+stage,b?'#ff9a3c':mean?'#e0322a':'#3a7bff');const m=mean?'★を通り過ぎると逃げるぞ！':{2:'🪙 コイン登場！通ると+50',3:'ネバネバ登場！触れると止まる'}[stage];if(m)setTimeout(()=>toast(m,'ok'),900)}
 function flee(){const dist={[P]:0},q=[P];while(q.length){const c=q.shift();for(let d=0;d<4;d++){const r=slide(c%N,c/N|0,d);if(r.length){const k=r[r.length-1];if(dist[k]===undefined){dist[k]=dist[c]+1;q.push(k)}}}}
 let c=Object.keys(dist).filter(k=>dist[k]>=Math.max(1,left-1)&&dist[k]<=left&&+k!==G);if(!c.length)c=Object.keys(dist).filter(k=>dist[k]>=1&&dist[k]<=left&&+k!==G);if(!c.length)return;
 const o=G;G=+rand(c);fled++;cells[o].classList.remove('g','m','f');const b=cells[G];b.classList.add('g','m','f');ring(o,'#ff3d6b');ring(G,'#2fd88a');pop(o,'べーっ！😜');say('べーっ！');snd(600,.3,'sawtooth',.08,1300);vib([15,30,15]);setTimeout(()=>b.classList.remove('f'),900)}
@@ -204,7 +205,7 @@ function home(){playing=false;busy=true;show(`<div class="logo a">${[...'ピタ�
 let sx=null,sy;addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY});
 addEventListener('pointerup',e=>{if(sx==null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.max(Math.abs(dx),Math.abs(dy))<22)return;Math.abs(dx)>Math.abs(dy)?move(dx>0?2:3):move(dy>0?0:1)});
 addEventListener('keydown',e=>{const k={ArrowDown:0,ArrowUp:1,ArrowRight:2,ArrowLeft:3}[e.key];if(k!==undefined){e.preventDefault();move(k)}});
-$('#re').onclick=()=>{if(playing&&!busy)reset()};
+$('#re').onclick=()=>{if(!playing||busy)return;if(retried){toast('やり直しは1ステージに1回だけ！','bad');return}retried=true;$('#re').classList.add('used');reset()};
 $('#hm').onclick=home;
 $('#mu').onclick=()=>{mute=!mute;$('#mu').textContent=mute?'🔇':'🔊'};
 gen();build();reset();busy=true;home();
