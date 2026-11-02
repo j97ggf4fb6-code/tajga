@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>ピタッと止まれ！</title>
 <style>
 :root{--g1:#fff3a0;--g2:#ffc2e0;--g3:#b5e8ff;--fg:#35221a;--sub:#8a6a8f;--bd:#fff;--cell:#fff;--w1:#8f6bff;--w2:#5a35e0;--goal:#2fd88a;--me:#ff4d6d;--card:#ffffffe6;--bad:#ff3d6b;--ok:#12b36a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -210,5 +210,10 @@ addEventListener('keydown',e=>{const k={ArrowDown:0,ArrowUp:1,ArrowRight:2,Arrow
 $('#re').onclick=()=>{if(!playing||busy)return;if(retried){toast('やり直しは1ステージに1回だけ！','bad');return}retried=true;$('#re').classList.add('used');reset()};
 $('#hm').onclick=home;
 $('#mu').onclick=()=>{mute=!mute;$('#mu').textContent=mute?'🔇':'🔊'};
+['gesturestart','gesturechange','gestureend','dblclick'].forEach(t=>addEventListener(t,e=>e.preventDefault(),{passive:false}));
+let lt=0;addEventListener('touchend',e=>{const n=Date.now();if(n-lt<350)e.preventDefault();lt=n},{passive:false});
+addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].includes(e.key))e.preventDefault()});
 gen();build();reset();busy=true;home();
 </script></body></html>
